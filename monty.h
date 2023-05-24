@@ -1,22 +1,17 @@
 #ifndef MONTY_H
 #define MONTY_H
 
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
-
-
-char **code_line;
-
+#include <stdbool.h>
 
 /**
  * struct stack_s - doubly linked list representation of stack (or queue)
  * @n: integer
  * @prev: points to previous element of the stack (or queue)
- * @next: points to next element of the stack (or queue)
- *
+ * @next: points to the next element of stack (or queue)
  * Description: doubly linked list node structure
  * for stack, queues, LIFO, FIFO
  */
@@ -26,13 +21,10 @@ typedef struct stack_s
 	struct stack_s *prev;
 	struct stack_s *next;
 } stack_t;
-
-
 /**
  * struct instruction_s - opcode and its function
- * @opcode: the opcode
- * @f: function to handle opcode
- *
+ * @opcode: opcode
+ * @f: function that handles the opcode
  * Description: opcode and its function
  * for stack, queues, LIFO, FIFO
  */
@@ -42,36 +34,60 @@ typedef struct instruction_s
 	void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
+/**
+ * struct settings_s - settings for all the program
+ * @file: file
+ * @line: line
+ * @stack: stack
+ * @queue: false
+ */
+typedef struct settings_s
+{
+	FILE *file;
+	char *line;
+	stack_t *stack;
+	_Bool queue;
+} settings_t;
 
-/* Macros */
-#define pin(x) printf("%s\n", x)
-#define din(x) printf("\n###\n")
+extern settings_t settings;
 
 
-/* Function prototypes */
-void correct_number_of_arguments(int argc);
-void viable_file(char *path, char *filename);
-void free_array(char **array);
-char **tokenizer(char *str, const char *delim);
-size_t stack_length(stack_t **stack);
-void short_stack(stack_t **stack, unsigned int line_number);
-int only_nums(char *s);
-void free_stack(stack_t *stack);
-void make_path(char **path, char *filename);
-void parse(char *path);
-void (*find_opcode(char **array, unsigned int line_number, stack_t **stack))\
-		(stack_t **stack, unsigned int line_number);
 
-/* Opcodes */
-void math(stack_t **stack, unsigned int line_number);
-void pchar_f(stack_t **stack, unsigned int line_number);
-void pstr_f(stack_t **stack, unsigned int line_number);
-void rotl_f(stack_t **stack, unsigned int line_number);
-void rotr_f(stack_t **stack, unsigned int line_number);
-void push_f(stack_t **stack, unsigned int line_number);
-void pall_f(stack_t **stack, unsigned int line_number);
-void pint_f(stack_t **stack, unsigned int line_number);
-void pop_f(stack_t **stack, unsigned int line_number);
-void swap_f(stack_t **stack, unsigned int line_number);
+void verify_args(int argc);
+void open_and_read(char *f);
+void exec_monty(stack_t **stack, char *opcode, int ln);
+void set(void);
+void clean(void);
 
-#endif /* MONTY_H */
+int is_number(char *c);
+
+void exec_pall(stack_t **stack, unsigned int line_number);
+void exec_pop(stack_t **stack, unsigned int line_number);
+void exec_pint(stack_t **stack, unsigned int line_number);
+void exec_swap(stack_t **stack, unsigned int line_number);
+void exec_nop(stack_t **stack, unsigned int line_number);
+
+void exec_pchar(stack_t **stack, unsigned int line_number);
+void exec_pstr(stack_t **stack, unsigned int line_number);
+
+void exec_div(stack_t **stack, unsigned int line_number);
+void exec_mod(stack_t **stack, unsigned int line_number);
+void exec_add(stack_t **stack, unsigned int line_number);
+void exec_sub(stack_t **stack, unsigned int line_number);
+void exec_mul(stack_t **stack, unsigned int line_number);
+
+void exec_rotl(stack_t **stack, unsigned int line_number);
+void exec_rotr(stack_t **stack, unsigned int line_number);
+
+
+void error_handler(char *opcode, int errorcode, int ln);
+
+void exec_stack(stack_t **stack, unsigned int line_number);
+void exec_queue(stack_t **stack, unsigned int line_number);
+
+
+stack_t *push_stack(stack_t **head, const int n);
+stack_t *push_queue(stack_t **head, const int n);
+void fstack(stack_t *head);
+
+#endif
